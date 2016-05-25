@@ -1,17 +1,16 @@
 <%--
   Created by IntelliJ IDEA.
   User: alicja
-  Date: 24.05.16
-  Time: 21:04
+  Date: 25.05.16
+  Time: 01:16
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>$Title$</title>
+    <title>Twitter</title>
 </head>
 <body>
-    hello <br/>
-
+twitter
 </body>
 </html>

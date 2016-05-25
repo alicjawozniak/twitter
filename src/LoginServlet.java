@@ -8,23 +8,11 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
- * Created by alicja on 24.05.16.
+ * Created by alicja on 25.05.16.
  */
-@WebServlet(name = "TwitterServlet", urlPatterns = {"/twitter"})
-public class TwitterServlet extends HttpServlet {
-
+@WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
+public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
-
-        // Check if this is new comer on your web page.
-        if (session.isNew()){
-            session.setAttribute("isNew", "true");
-        } else {
-            session.setAttribute("isNew", "false");
-
-        }
-        // Set response content type
-        response.setContentType("text/html");
 
     }
 
@@ -33,7 +21,7 @@ public class TwitterServlet extends HttpServlet {
         HttpSession session = request.getSession();
 
         // Check if this is new comer on your web page.
-        if (session.isNew()){
+        if (session.isNew()) {
             session.setAttribute("isNew", "true");
         } else {
             session.setAttribute("isNew", "false");
@@ -41,7 +29,7 @@ public class TwitterServlet extends HttpServlet {
         }
         // Set response content type
 //        response.setContentType("text/html");
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/twitter.jsp");
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/login.jsp");
         dispatcher.forward(request, response);
     }
 }
