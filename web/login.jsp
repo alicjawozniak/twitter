@@ -13,7 +13,7 @@
 <body>
 login
 ${isNew}
-<form class="form-signin" action="http://localhost:8080/" method="post">
+<form class="form-signin" action="http://localhost:8080/login" method="post">
     <input type="text" class="form-control" placeholder="Email" name="email" required autofocus>
     <input type="password" class="form-control" placeholder="Hasło" name="password" required>
     <button class="btn btn-lg btn-primary btn-block" type="submit">Log in</button>
