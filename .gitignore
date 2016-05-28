@@ -2,6 +2,7 @@
 *.class
 /users
 twitter.iml
+/posts
 /key
 
 # Mobile Tools for Java (J2ME)

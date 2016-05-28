@@ -1,6 +1,5 @@
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import java.time.LocalDateTime;
 
 /**
@@ -11,8 +10,7 @@ public class Post {
     @Id
     private Long id;
 
-    @ManyToOne
-    private User user;
+    private String userName;
 
     private String text;
 
@@ -26,12 +24,12 @@ public class Post {
         this.id = id;
     }
 
-    public User getUser() {
-        return user;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getText() {
