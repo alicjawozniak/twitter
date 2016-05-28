@@ -45,4 +45,13 @@ public class TwitterServlet extends HttpServlet {
             dispatcher.forward(request, response);
         }
     }
+
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        session.invalidate();
+        response.sendRedirect("/login");
+
+    }
+
 }

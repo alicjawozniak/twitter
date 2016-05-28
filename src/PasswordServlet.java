@@ -25,10 +25,14 @@ public class PasswordServlet extends HttpServlet {
             if (user != null) {
                 if (UserService.checkPasswordEntropy(newPassword)) {
                     UserService.changePassword(user, newPassword);
+                    session.setAttribute("error", "");
+                    session.setAttribute("result", "Zmiana hasła się powiodła");
                 } else {
+                    session.setAttribute("result", "");
                     session.setAttribute("error", "Za słabe nowe hasło");
                 }
             } else {
+                session.setAttribute("result", "");
                 session.setAttribute("error", "Błędne hasło");
             }
             RequestDispatcher dispatcher = request.getRequestDispatcher("/password.jsp");

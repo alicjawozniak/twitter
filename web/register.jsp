@@ -11,10 +11,12 @@
     <title>Register</title>
 </head>
 <body>
-Register
+Register <br/>
+Bład: ${error}<br/>
+Wynik: ${result}
 <form class="form-signin" action="http://localhost:8080/register" method="post">
     <input type="text" class="form-control" placeholder="Name" name="username" required autofocus>
-    <input type="password" class="form-control" placeholder="Password" name="password" required>
+    <input type="password" class="form-control" placeholder="Password" name="password" minlength="8" required>
     <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
 </form>
 

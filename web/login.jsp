@@ -11,9 +11,8 @@
     <title>Login</title>
 </head>
 <body>
-login
-${isNew}
-${badPasswordCount}
+badPasswordCount: ${badPasswordCount}<br/>
+Bład: ${error}
 <form class="form-signin" action="http://localhost:8080/login" method="post">
     <input type="text" class="form-control" placeholder="Name" name="username" required autofocus>
     <input type="password" class="form-control" placeholder="Password" name="password" required>
