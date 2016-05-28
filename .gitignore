@@ -2,6 +2,7 @@
 *.class
 /users
 twitter.iml
+/key
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/

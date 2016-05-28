@@ -12,15 +12,32 @@ import java.io.IOException;
  */
 @WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
-    private UserService userService;
-
-    @Override
-    public void init() {
-        userService = new UserService();
-    }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        Integer badPasswordCount = 0;
+        try {
+            badPasswordCount = (Integer) session.getAttribute("badPasswordCount");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/login.jsp");
+        if (badPasswordCount >= 3) {
+            System.out.print("badPasswordCount>=3");
+        } else {
+            String userName = request.getParameter("username");
+            String password = request.getParameter("password");
+
+            if (UserService.checkPassword(userName, password)) {
+                System.out.print("dobre haslo");
+                dispatcher = request.getRequestDispatcher("/twitter.jsp");
+            } else {
+                System.out.print("zle haslo");
+                session.setAttribute("badPasswordCount", badPasswordCount + 1);
+            }
+        }
+        dispatcher.forward(request, response);
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

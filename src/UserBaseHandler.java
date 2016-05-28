@@ -88,4 +88,30 @@ public class UserBaseHandler {
         File newFile = new File(tmpFileName);
         newFile.renameTo(oldFile);
     }
+
+    public Long findLastId() {
+        Long lastId = 0L;
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader(fileName));
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] splited = line.split("\\s+");
+                Long l = new Long(splited[0]);
+                if (l > lastId) {
+                    lastId = l;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (br != null)
+                    br.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return lastId;
+    }
 }
