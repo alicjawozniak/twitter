@@ -9,7 +9,7 @@ import java.util.Arrays;
  */
 public class UserService {
     static private UserBaseHandler userBaseHandler = new UserBaseHandler();
-    static private SecretKey key;
+    static private SecretKey key = init();
 
     public boolean isLogged() {
         return true;
@@ -19,9 +19,13 @@ public class UserService {
 
     }
 
-    static public boolean checkPassword(String name, String password) {
+    static public User checkPassword(String name, String password) {
         User user = userBaseHandler.findByName(name);
-        return encrypt(password).equals(user.getPassword());
+        if (user != null && encrypt(password).equals(user.getPassword())) {
+            return user;
+        } else {
+            return null;
+        }
     }
 
     static public String encrypt(String text) {
@@ -53,7 +57,8 @@ public class UserService {
         return text;
     }
 
-    static public void init() {
+    static public SecretKey init() {
+        SecretKey tempKey = null;
         try {
             String filePathToStore = "/home/alicja/Desktop/twitter/key";
             File file = new File(filePathToStore);
@@ -63,21 +68,21 @@ public class UserService {
                 //load
                 InputStream readStream = new FileInputStream(filePathToStore);
                 ks.load(readStream, null);
-                key = (SecretKey) ks.getKey("keyAlias", "pass".toCharArray());
+                tempKey = (SecretKey) ks.getKey("keyAlias", "pass".toCharArray());
                 readStream.close();
             } else {
                 //generate and store
-                key = KeyGenerator.getInstance("DES").generateKey();
+                tempKey = KeyGenerator.getInstance("DES").generateKey();
                 ks.load(null, null);
-                ks.setKeyEntry("keyAlias", key, "pass".toCharArray(), null);
+                ks.setKeyEntry("keyAlias", tempKey, "pass".toCharArray(), null);
                 OutputStream writeStream = new FileOutputStream(filePathToStore);
                 ks.store(writeStream, "pass".toCharArray());
                 writeStream.close();
-
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return tempKey;
     }
 
     static public User register(String name, String password) {

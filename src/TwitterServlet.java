@@ -16,15 +16,13 @@ public class TwitterServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
 
-        // Check if this is new comer on your web page.
-        if (session.isNew()){
+        if (session.isNew() || session.getAttribute("user") == null) {
             session.setAttribute("isNew", "true");
+            response.sendRedirect("/login");
         } else {
-            session.setAttribute("isNew", "false");
-
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/twitter.jsp");
+            dispatcher.forward(request, response);
         }
-        // Set response content type
-        response.setContentType("text/html");
 
     }
 
@@ -32,16 +30,12 @@ public class TwitterServlet extends HttpServlet {
 
         HttpSession session = request.getSession();
 
-        // Check if this is new comer on your web page.
-        if (session.isNew()){
+        if (session.isNew() || session.getAttribute("user") == null) {
             session.setAttribute("isNew", "true");
+            response.sendRedirect("/login");
         } else {
-            session.setAttribute("isNew", "false");
-
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/twitter.jsp");
+            dispatcher.forward(request, response);
         }
-        // Set response content type
-//        response.setContentType("text/html");
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/twitter.jsp");
-        dispatcher.forward(request, response);
     }
 }

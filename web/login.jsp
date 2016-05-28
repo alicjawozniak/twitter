@@ -13,6 +13,7 @@
 <body>
 login
 ${isNew}
+${badPasswordCount}
 <form class="form-signin" action="http://localhost:8080/login" method="post">
     <input type="text" class="form-control" placeholder="Name" name="username" required autofocus>
     <input type="password" class="form-control" placeholder="Password" name="password" required>

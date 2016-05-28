@@ -12,5 +12,10 @@
 </head>
 <body>
 twitter
+${user}
+${isNew}
+${user.name}
+${user.id}
+${user.password}
 </body>
 </html>

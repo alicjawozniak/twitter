@@ -22,22 +22,28 @@ public class LoginServlet extends HttpServlet {
             e.printStackTrace();
         }
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/login.jsp");
+        if (badPasswordCount == null) {
+            badPasswordCount = new Integer(0);
+        }
+
         if (badPasswordCount >= 3) {
             System.out.print("badPasswordCount>=3");
         } else {
             String userName = request.getParameter("username");
             String password = request.getParameter("password");
 
-            if (UserService.checkPassword(userName, password)) {
+            User user = UserService.checkPassword(userName, password);
+            if (user != null) {
                 System.out.print("dobre haslo");
-                dispatcher = request.getRequestDispatcher("/twitter.jsp");
+                session.setAttribute("user", user);
+                response.sendRedirect("/twitter");
             } else {
                 System.out.print("zle haslo");
                 session.setAttribute("badPasswordCount", badPasswordCount + 1);
+                RequestDispatcher dispatcher = request.getRequestDispatcher("/login.jsp");
+                dispatcher.forward(request, response);
             }
         }
-        dispatcher.forward(request, response);
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
