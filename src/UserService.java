@@ -4,6 +4,9 @@ import javax.crypto.SecretKey;
 import java.io.*;
 import java.security.KeyStore;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by alicja on 25.05.16.
  */
@@ -15,7 +18,9 @@ public class UserService {
         return true;
     }
 
-    public void changePassword() {
+    static public void changePassword(User user, String password) {
+        user.setPassword(encrypt(password));
+        userBaseHandler.save(user);
 
     }
 
@@ -96,5 +101,24 @@ public class UserService {
         } else {
             return null;
         }
+    }
+
+    static public boolean checkPasswordEntropy(String password) {
+        //check if entropy at least 3
+        Map<String, Integer> map = new HashMap<String, Integer>();
+        Double result = 0.0;
+        char[] chars = password.toCharArray();
+        for (char c : chars) {
+            String s = "" + c;
+            if (!map.containsKey(s)) {
+                map.put(s, 0);
+            }
+            map.put(s, map.get(s) + 1);
+        }
+        for (String sequence : map.keySet()) {
+            Double frequency = (double) map.get(sequence) / password.length();
+            result -= frequency * (Math.log(frequency) / Math.log(2));
+        }
+        return result > 3;
     }
 }
