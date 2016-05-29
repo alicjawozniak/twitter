@@ -24,7 +24,15 @@ public class TwitterServlet extends HttpServlet {
             response.sendRedirect("/login");
         } else {
             String text = request.getParameter("text");
-            PostService.addPost(user.getName(), text);
+
+            if (PostService.checkIfContainsNewLine(text)) {
+                session.setAttribute("result", "");
+                session.setAttribute("error", "Post nie może zawierać znaku nowej linii");
+            } else {
+                text = PostService.convertSpecialSigns(text);
+                String userName = PostService.convertSpecialSigns(user.getName());
+                PostService.addPost(userName, text);
+            }
             response.sendRedirect("/twitter");
 
         }

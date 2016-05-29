@@ -45,6 +45,8 @@ public class LoginServlet extends HttpServlet {
             if (user != null) {
                 System.out.print("dobre haslo");
                 session.setAttribute("user", user);
+                userName = PostService.convertSpecialSigns(user.getName());
+                session.setAttribute("userName", userName);
                 session.setAttribute("error", "");
                 response.sendRedirect("/twitter");
             } else {

@@ -17,13 +17,18 @@ public class RegisterServlet extends HttpServlet {
 
         String userName = request.getParameter("username");
         String password = request.getParameter("password");
-        if (UserService.checkPasswordEntropy(password)) {
-            UserService.register(userName, password);
-            session.setAttribute("error", "");
-            session.setAttribute("result", "Rejestracja się powiodła");
-        } else {
+        if (PostService.checkIfContainsWhitespaces(userName)) {
             session.setAttribute("result", "");
-            session.setAttribute("error", "Za słabe hasło");
+            session.setAttribute("error", "Login nie może zawierać białych znaków");
+        } else {
+            if (UserService.checkPasswordEntropy(password)) {
+                UserService.register(userName, password);
+                session.setAttribute("error", "");
+                session.setAttribute("result", "Rejestracja się powiodła");
+            } else {
+                session.setAttribute("result", "");
+                session.setAttribute("error", "Za słabe hasło");
+            }
         }
         RequestDispatcher dispatcher = request.getRequestDispatcher("/register.jsp");
         dispatcher.forward(request, response);

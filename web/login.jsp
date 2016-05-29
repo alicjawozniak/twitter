@@ -11,6 +11,7 @@
     <title>Login</title>
 </head>
 <body>
+Zalogowany jako: ${userName}<br/>
 badPasswordCount: ${badPasswordCount}<br/>
 Bład: ${error}
 <form class="form-signin" action="http://localhost:8080/login" method="post">

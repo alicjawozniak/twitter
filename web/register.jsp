@@ -12,6 +12,7 @@
 </head>
 <body>
 Register <br/>
+Zalogowany jako: ${userName}<br/>
 Bład: ${error}<br/>
 Wynik: ${result}
 <form class="form-signin" action="http://localhost:8080/register" method="post">

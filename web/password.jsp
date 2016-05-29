@@ -11,6 +11,7 @@
     <title>Change password</title>
 </head>
 <body>
+Zalogowany jako: ${userName}<br/>
 Bład: ${error}<br/>
 Wynik: ${result}
 <form class="form-signin" action="http://localhost:8080/password" method="post">
