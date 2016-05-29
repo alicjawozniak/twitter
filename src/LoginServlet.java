@@ -34,6 +34,13 @@ public class LoginServlet extends HttpServlet {
             String userName = request.getParameter("username");
             String password = request.getParameter("password");
 
+            //opoznienie w celu wydłużenia ataków zdalnych
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
             User user = UserService.checkPassword(userName, password);
             if (user != null) {
                 System.out.print("dobre haslo");

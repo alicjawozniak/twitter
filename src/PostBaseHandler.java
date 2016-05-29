@@ -43,7 +43,8 @@ public class PostBaseHandler {
                 post.setId(new Long(splited[0]));
                 post.setUserName(splited[1]);
                 post.setLocalDateTime(LocalDateTime.parse(splited[2]));
-                post.setText(splited[3]);
+                int index = splited[0].length() + 1 + splited[1].length() + 1 + splited[2].length() + 1;
+                post.setText(line.substring(index));
 
                 postList.add(post);
             }

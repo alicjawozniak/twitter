@@ -19,14 +19,14 @@ public class UserService {
     }
 
     static public void changePassword(User user, String password) {
-        user.setPassword(encrypt(password));
+        user.setPassword(tripleEncrypt(password));
         userBaseHandler.save(user);
 
     }
 
     static public User checkPassword(String name, String password) {
         User user = userBaseHandler.findByName(name);
-        if (user != null && encrypt(password).equals(user.getPassword())) {
+        if (user != null && tripleEncrypt(password).equals(user.getPassword())) {
             return user;
         } else {
             return null;
@@ -94,7 +94,7 @@ public class UserService {
         if (userBaseHandler.findByName(name) == null) {
             User user = new User();
             user.setName(name);
-            user.setPassword(encrypt(password));
+            user.setPassword(tripleEncrypt(password));
             user.setId(userBaseHandler.findLastId() + 1);
             userBaseHandler.save(user);
             return user;
@@ -120,5 +120,9 @@ public class UserService {
             result -= frequency * (Math.log(frequency) / Math.log(2));
         }
         return result > 3;
+    }
+
+    static public String tripleEncrypt(String s) {
+        return encrypt(encrypt(encrypt(s)));
     }
 }
