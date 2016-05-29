@@ -29,7 +29,7 @@ public class LoginServlet extends HttpServlet {
         if (badPasswordCount >= 3) {
             System.out.print("badPasswordCount>=3");
             session.setAttribute("error", "Przekroczona max ilość prób");
-            session.setAttribute("result", "");
+            session.setAttribute("result", null);
         } else {
             String userName = request.getParameter("username");
             String password = request.getParameter("password");
@@ -47,12 +47,12 @@ public class LoginServlet extends HttpServlet {
                 session.setAttribute("user", user);
                 userName = PostService.convertSpecialSigns(user.getName());
                 session.setAttribute("userName", userName);
-                session.setAttribute("error", "");
+                session.setAttribute("error", null);
                 response.sendRedirect("/twitter");
             } else {
                 System.out.print("zle haslo");
                 session.setAttribute("error", "Błędne hasło");
-                session.setAttribute("result", "");
+                session.setAttribute("result", null);
                 session.setAttribute("badPasswordCount", badPasswordCount + 1);
                 RequestDispatcher dispatcher = request.getRequestDispatcher("/login.jsp");
                 dispatcher.forward(request, response);

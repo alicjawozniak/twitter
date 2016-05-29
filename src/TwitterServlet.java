@@ -26,7 +26,7 @@ public class TwitterServlet extends HttpServlet {
             String text = request.getParameter("text");
 
             if (PostService.checkIfContainsNewLine(text)) {
-                session.setAttribute("result", "");
+                session.setAttribute("result", null);
                 session.setAttribute("error", "Post nie może zawierać znaku nowej linii");
             } else {
                 text = PostService.convertSpecialSigns(text);
