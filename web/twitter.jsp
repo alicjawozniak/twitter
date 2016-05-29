@@ -14,15 +14,15 @@
 <body>
 <h2>twitter</h2>
 Zalogowany jako: ${userName}<br/>
-<%--<form class="form-signin" action="http://localhost:8080/password" method="get">--%>
-<%--<button class="btn btn-lg btn-primary btn-block" type="submit">Change password</button>--%>
-<%--</form>--%>
-<%--<form class="form-signin" action="http://localhost:8080/twitter" method="">--%>
-<%--<button class="btn btn-lg btn-primary btn-block" type="submit">Log out</button>--%>
-<%--</form>--%>
+<form class="form-signin" action="http://localhost:8080/password" method="get">
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Change password</button>
+</form>
+<form class="form-signin" action="http://localhost:8080/twitter/logout" method="get">
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Log out</button>
+</form>
 
-<button type="submit" formaction="http://localhost:8080/password" formmethod="get">Change password</button>
-<button type="submit" formaction="http://localhost:8080/twitter" formmethod="delete">Log out</button>
+<%--<button type="submit" formaction="http://localhost:8080/password" formmethod="get">Change password</button>--%>
+<%--<button type="submit" formaction="http://localhost:8080/twitter" formmethod="delete">Log out</button>--%>
 
 <form class="form-signin" action="http://localhost:8080/twitter" method="post">
     <input type="text" class="form-control" placeholder="Text" name="text" required autofocus>

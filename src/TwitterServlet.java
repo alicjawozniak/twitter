@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by alicja on 24.05.16.
  */
-@WebServlet(name = "TwitterServlet", urlPatterns = {"/twitter"})
+@WebServlet(name = "TwitterServlet", urlPatterns = {"/twitter/*"})
 public class TwitterServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -43,14 +43,20 @@ public class TwitterServlet extends HttpServlet {
 
         HttpSession session = request.getSession();
 
-        if (session.isNew() || session.getAttribute("user") == null) {
-            session.setAttribute("isNew", "true");
+        //logout
+        if ("/logout".equals(request.getPathInfo())) {
+            session.invalidate();
             response.sendRedirect("/login");
         } else {
-            List<Post> postList = PostService.query();
-            session.setAttribute("postList", postList);
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/twitter.jsp");
-            dispatcher.forward(request, response);
+            if (session.isNew() || session.getAttribute("user") == null) {
+                session.setAttribute("isNew", "true");
+                response.sendRedirect("/login");
+            } else {
+                List<Post> postList = PostService.query();
+                session.setAttribute("postList", postList);
+                RequestDispatcher dispatcher = request.getRequestDispatcher("/twitter.jsp");
+                dispatcher.forward(request, response);
+            }
         }
     }
 
