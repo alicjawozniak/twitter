@@ -1,9 +1,11 @@
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import java.io.*;
-import java.security.KeyStore;
-import java.util.Arrays;
+import org.sqlite.SQLiteConfig;
+import org.sqlite.SQLiteDataSource;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,22 +13,21 @@ import java.util.Map;
  * Created by alicja on 25.05.16.
  */
 public class UserService {
-    static private UserBaseHandler userBaseHandler = new UserBaseHandler();
-    static private SecretKey key = init();
+    static private SqlUserBaseHandler sqlUserBaseHandler = init();
 
     public boolean isLogged() {
         return true;
     }
 
     static public void changePassword(User user, String password) {
-        user.setPassword(tripleEncrypt(password));
-        userBaseHandler.save(user);
+        user.setPassword(encrypt(password));
+        sqlUserBaseHandler.save(user);
 
     }
 
     static public User checkPassword(String name, String password) {
-        User user = userBaseHandler.findByName(name);
-        if (user != null && tripleEncrypt(password).equals(user.getPassword())) {
+        User user = sqlUserBaseHandler.findByName(name);
+        if (user != null && encrypt(password).equals(user.getPassword())) {
             return user;
         } else {
             return null;
@@ -34,69 +35,46 @@ public class UserService {
     }
 
     static public String encrypt(String text) {
+        MessageDigest messageDigest = null;
         try {
-            Cipher ecipher = Cipher.getInstance("DES");
-            ecipher.init(Cipher.ENCRYPT_MODE, key);
-            byte[] utf8 = text.getBytes("UNICODE");
-            byte[] enc = ecipher.doFinal(utf8);
-
-            return new String(enc, "UNICODE");
-        } catch (Exception e) {
+            messageDigest = MessageDigest.getInstance("SHA-256");
+            messageDigest.update(text.getBytes());
+            String encryptedString = new String(messageDigest.digest());
+            return encryptedString;
+        } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
         return text;
     }
 
-    static public String decrypt(String text) {
+    static public SqlUserBaseHandler init() {
+        SqlUserBaseHandler sqlUserBaseHandler = new SqlUserBaseHandler();
+        SQLiteConfig config = new SQLiteConfig();
+        SQLiteDataSource dataSource = new SQLiteDataSource(config);
+        dataSource.setUrl("jdbc:sqlite:/home/alicja/Desktop/twitter/users_sql");
         try {
-            Cipher dcipher = Cipher.getInstance("DES");
-            dcipher.init(Cipher.DECRYPT_MODE, key);
-            byte[] bytes = text.getBytes("UNICODE");
-            bytes = Arrays.copyOfRange(bytes, 2, bytes.length);
-            byte[] ud = dcipher.doFinal(bytes);
+            Connection connection = dataSource.getConnection();
+            Statement statement = connection.createStatement();
+            String sql = "CREATE TABLE USER " +
+                    "(ID INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    " NAME           TEXT    NOT NULL, " +
+                    " PASSWORD            TEXT   NOT NULL)";
+            statement.executeUpdate(sql);
+            statement.close();
+            connection.close();
 
-            return new String(ud, "UNICODE");
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
-        return text;
-    }
-
-    static public SecretKey init() {
-        SecretKey tempKey = null;
-        try {
-            String filePathToStore = "/home/alicja/Desktop/twitter/key";
-            File file = new File(filePathToStore);
-            KeyStore ks = KeyStore.getInstance("JCEKS");
-
-            if (file.exists()) {
-                //load
-                InputStream readStream = new FileInputStream(filePathToStore);
-                ks.load(readStream, null);
-                tempKey = (SecretKey) ks.getKey("keyAlias", "pass".toCharArray());
-                readStream.close();
-            } else {
-                //generate and store
-                tempKey = KeyGenerator.getInstance("DES").generateKey();
-                ks.load(null, null);
-                ks.setKeyEntry("keyAlias", tempKey, "pass".toCharArray(), null);
-                OutputStream writeStream = new FileOutputStream(filePathToStore);
-                ks.store(writeStream, "pass".toCharArray());
-                writeStream.close();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return tempKey;
+        return sqlUserBaseHandler;
     }
 
     static public User register(String name, String password) {
-        if (userBaseHandler.findByName(name) == null) {
+        if (sqlUserBaseHandler.findByName(name) == null) {
             User user = new User();
             user.setName(name);
-            user.setPassword(tripleEncrypt(password));
-            user.setId(userBaseHandler.findLastId() + 1);
-            userBaseHandler.save(user);
+            user.setPassword(encrypt(password));
+            sqlUserBaseHandler.save(user);
             return user;
         } else {
             return null;

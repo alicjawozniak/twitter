@@ -30,6 +30,8 @@ public class LoginServlet extends HttpServlet {
             System.out.print("badPasswordCount>=3");
             session.setAttribute("error", "Przekroczona max ilość prób");
             session.setAttribute("result", null);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/login.jsp");
+            dispatcher.forward(request, response);
         } else {
             String userName = request.getParameter("username");
             String password = request.getParameter("password");
