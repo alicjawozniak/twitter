@@ -7,17 +7,19 @@ import javax.persistence.Id;
 @Entity
 public class User {
     @Id
-    private Long id;
+    private int id;
 
     private String name;
 
-    private String password;
+    private byte[] hashedPassword;
 
-    public Long getId() {
+    private byte[] salt;
+
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -29,11 +31,19 @@ public class User {
         this.name = name;
     }
 
-    public String getPassword() {
-        return password;
+    public byte[] getHashedPassword() {
+        return hashedPassword;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setHashedPassword(byte[] hashedPassword) {
+        this.hashedPassword = hashedPassword;
+    }
+
+    public byte[] getSalt() {
+        return salt;
+    }
+
+    public void setSalt(byte[] salt) {
+        this.salt = salt;
     }
 }

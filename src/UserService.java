@@ -1,13 +1,18 @@
 import org.sqlite.SQLiteConfig;
 import org.sqlite.SQLiteDataSource;
 
-import java.security.MessageDigest;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Created by alicja on 25.05.16.
@@ -15,36 +20,26 @@ import java.util.Map;
 public class UserService {
     static private SqlUserBaseHandler sqlUserBaseHandler = init();
 
-    public boolean isLogged() {
-        return true;
-    }
-
     static public void changePassword(User user, String password) {
-        user.setPassword(encrypt(password));
-        sqlUserBaseHandler.save(user);
+        user = sqlUserBaseHandler.findByName(user.getName());
+        byte[] newPassword = hash(password.toCharArray(), user.getSalt());
+        user.setHashedPassword(newPassword);
+        sqlUserBaseHandler.update(user);
 
     }
 
     static public User checkPassword(String name, String password) {
         User user = sqlUserBaseHandler.findByName(name);
-        if (user != null && encrypt(password).equals(user.getPassword())) {
-            return user;
+        if (user != null) {
+            byte[] pass = hash(password.toCharArray(), user.getSalt());
+            if (Arrays.equals(pass, user.getHashedPassword())) {
+                return user;
+            } else {
+                return null;
+            }
         } else {
             return null;
         }
-    }
-
-    static public String encrypt(String text) {
-        MessageDigest messageDigest = null;
-        try {
-            messageDigest = MessageDigest.getInstance("SHA-256");
-            messageDigest.update(text.getBytes());
-            String encryptedString = new String(messageDigest.digest());
-            return encryptedString;
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return text;
     }
 
     static public SqlUserBaseHandler init() {
@@ -58,7 +53,8 @@ public class UserService {
             String sql = "CREATE TABLE USER " +
                     "(ID INTEGER PRIMARY KEY AUTOINCREMENT," +
                     " NAME           TEXT    NOT NULL, " +
-                    " PASSWORD            TEXT   NOT NULL)";
+                    "HASHEDPASSWORD BLOB," +
+                    "SALT BLOB)";
             statement.executeUpdate(sql);
             statement.close();
             connection.close();
@@ -73,7 +69,9 @@ public class UserService {
         if (sqlUserBaseHandler.findByName(name) == null) {
             User user = new User();
             user.setName(name);
-            user.setPassword(encrypt(password));
+            byte[] salt = getNextSalt();
+            user.setHashedPassword(hash(password.toCharArray(), salt));
+            user.setSalt(salt);
             sqlUserBaseHandler.save(user);
             return user;
         } else {
@@ -100,7 +98,34 @@ public class UserService {
         return result > 3;
     }
 
-    static public String tripleEncrypt(String s) {
-        return encrypt(encrypt(encrypt(s)));
+    private static final Random RANDOM = new SecureRandom();
+    private static final int ITERATIONS = 10000;
+    private static final int KEY_LENGTH = 256;
+
+    public static byte[] getNextSalt() {
+        byte[] salt = new byte[16];
+        RANDOM.nextBytes(salt);
+        return salt;
+    }
+
+    /**
+     * Returns a salted and hashed password using the provided hash.<br>
+     * Note - side effect: the password is destroyed (the char[] is filled with zeros)
+     *
+     * @param password the password to be hashed
+     * @param salt     a 16 bytes salt, ideally obtained with the getNextSalt method
+     * @return the hashed password with a pinch of salt
+     */
+    public static byte[] hash(char[] password, byte[] salt) {
+        PBEKeySpec spec = new PBEKeySpec(password, salt, ITERATIONS, KEY_LENGTH);
+        Arrays.fill(password, Character.MIN_VALUE);
+        try {
+            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+            return skf.generateSecret(spec).getEncoded();
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            throw new AssertionError("Error while hashing a password: " + e.getMessage(), e);
+        } finally {
+            spec.clearPassword();
+        }
     }
 }
