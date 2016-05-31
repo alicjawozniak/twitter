@@ -30,7 +30,7 @@ Zalogowany jako: ${userName}<br/>
 </form>
 <h2>Posty</h2>
 <c:forEach items="${postList}" var="post" varStatus="postIndex">
-    ${post.localDateTime} <b>${post.userName}</b>: ${post.text}<br/>
+   <b>${post.userName}</b>: ${post.text}<br/>
 </c:forEach>
 </body>
 </html>

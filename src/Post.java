@@ -1,6 +1,5 @@
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import java.time.LocalDateTime;
 
 /**
  * Created by alicja on 25.05.16.
@@ -13,8 +12,6 @@ public class Post {
     private String userName;
 
     private String text;
-
-    private LocalDateTime localDateTime;
 
     public Long getId() {
         return id;
@@ -40,11 +37,4 @@ public class Post {
         this.text = text;
     }
 
-    public LocalDateTime getLocalDateTime() {
-        return localDateTime;
-    }
-
-    public void setLocalDateTime(LocalDateTime localDateTime) {
-        this.localDateTime = localDateTime;
-    }
 }

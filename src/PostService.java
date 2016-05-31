@@ -1,24 +1,27 @@
-import java.time.LocalDateTime;
+import org.sqlite.SQLiteConfig;
+import org.sqlite.SQLiteDataSource;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 /**
  * Created by alicja on 28.05.16.
  */
 public class PostService {
-    static private PostBaseHandler postBaseHandler = new PostBaseHandler();
+    static private SqlPostBaseHandler sqlPostBaseHandler = init();
 
     static public void addPost(String userName, String text) {
         Post post = new Post();
-        post.setLocalDateTime(LocalDateTime.now());
         post.setUserName(userName);
-        post.setId(postBaseHandler.findLastId() + 1);
         post.setText(text);
-        postBaseHandler.add(post);
+        sqlPostBaseHandler.add(post);
 
     }
 
     static public List<Post> query() {
-        return postBaseHandler.query();
+        return sqlPostBaseHandler.query();
     }
 
     static public boolean checkIfContainsWhitespaces(String s) {
@@ -62,5 +65,27 @@ public class PostService {
             }
         }
         return false;
+    }
+
+    static public SqlPostBaseHandler init() {
+        SqlPostBaseHandler sqlPostBaseHandler = new SqlPostBaseHandler();
+        SQLiteConfig config = new SQLiteConfig();
+        SQLiteDataSource dataSource = new SQLiteDataSource(config);
+        dataSource.setUrl("jdbc:sqlite:/home/alicja/Desktop/twitter/posts_sql");
+        try {
+            Connection connection = dataSource.getConnection();
+            Statement statement = connection.createStatement();
+            String sql = "CREATE TABLE POST " +
+                    "(ID INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    " USERNAME           TEXT    NOT NULL, " +
+                    " TEXT            TEXT   NOT NULL)";
+            statement.executeUpdate(sql);
+            statement.close();
+            connection.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return sqlPostBaseHandler;
     }
 }

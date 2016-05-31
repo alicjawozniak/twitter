@@ -2,14 +2,18 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by alicja on 31.05.16.
  */
-public class SqlUserBaseHandler {
-    private Connection c;
+public class SqlPostBaseHandler {
 
-    public User findByName(String name) {
+    Connection c;
+
+    public List<Post> query() {
+        List<Post> postList = new ArrayList<>();
         Connection c = null;
         Statement stmt = null;
         User user = null;
@@ -19,27 +23,28 @@ public class SqlUserBaseHandler {
             System.out.println("Opened database successfully");
 
             stmt = c.createStatement();
-            name = new StringBuilder().append('\'').append(name).append('\'').toString();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM USER WHERE NAME IS " + name + ";");
-            int id = rs.getInt("id");
-            String password = rs.getString("password");
-            user = new User();
-            user.setId(new Long(id));
-            user.setName(name);
-            user.setPassword(password);
+            ResultSet rs = stmt.executeQuery("SELECT * FROM POST;");
+            while (rs.next()) {
+                Post post = new Post();
+                int id = rs.getInt("id");
+                String userName = rs.getString("username");
+                String text = rs.getString("text");
+                post.setId(new Long(id));
+                post.setUserName(userName);
+                post.setText(text);
+                postList.add(post);
+            }
 
             stmt.close();
             c.commit();
-//            c.close();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
         System.out.println("Records created successfully");
-        return user;
+        return postList;
     }
 
-    public void save(User user) {
+    public void add(Post post) {
         Connection c = null;
         Statement stmt = null;
         try {
@@ -48,25 +53,25 @@ public class SqlUserBaseHandler {
             System.out.println("Opened database successfully");
 
             stmt = c.createStatement();
-            String values = new StringBuilder().append("\'").append(user.getName()).append("\', \'").append(user.getPassword()).append('\'').toString();
-            String sql = "INSERT INTO USER (NAME,PASSWORD) " +
+            String values = new StringBuilder().append("\'").append(post.getUserName()).append("\', \'").append(post.getText()).append('\'').toString();
+            String sql = "INSERT INTO POST (USERNAME,TEXT) " +
                     "VALUES (" + values + ");";
             stmt.executeUpdate(sql);
 
             stmt.close();
             c.commit();
-//            c.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
         System.out.println("Records created successfully");
     }
 
+
     private Connection getConnection() {
         if (c == null) {
             try {
                 Class.forName("org.sqlite.JDBC");
-                c = DriverManager.getConnection("jdbc:sqlite:/home/alicja/Desktop/twitter/users_sql");
+                c = DriverManager.getConnection("jdbc:sqlite:/home/alicja/Desktop/twitter/posts_sql");
             } catch (Exception e) {
                 e.printStackTrace();
             }
