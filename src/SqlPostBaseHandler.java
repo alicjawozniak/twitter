@@ -1,7 +1,4 @@
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,17 +43,19 @@ public class SqlPostBaseHandler {
 
     public void add(Post post) {
         Connection c = null;
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         try {
             c = getConnection();
             c.setAutoCommit(false);
             System.out.println("Opened database successfully");
 
-            stmt = c.createStatement();
-            String values = new StringBuilder().append("\'").append(post.getUserName()).append("\', \'").append(post.getText()).append('\'').toString();
             String sql = "INSERT INTO POST (USERNAME,TEXT) " +
-                    "VALUES (" + values + ");";
-            stmt.executeUpdate(sql);
+                    "VALUES (?,?);";
+            stmt = c.prepareStatement(sql);
+
+            stmt.setString(1, post.getUserName());
+            stmt.setString(2, post.getText());
+            stmt.executeUpdate();
 
             stmt.close();
             c.commit();

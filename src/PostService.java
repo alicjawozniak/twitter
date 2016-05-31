@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
+
 /**
  * Created by alicja on 28.05.16.
  */
@@ -34,28 +36,7 @@ public class PostService {
     }
 
     static public String convertSpecialSigns(String s) {
-        String temp = "";
-        for (int i = 0; i < s.length(); ++i) {
-            char c = s.charAt(i);
-            if (c == '&') {
-                temp += "&amp;";
-            } else if (c == '<') {
-                temp += "&lt;";
-            } else if (c == '>') {
-                temp += "&gt;";
-            } else if (c == '`') {
-                temp += "&#x60;";
-            } else if (c == '\'') {
-                temp += "&#x27;";
-            } else if (c == '\"') {
-                temp += "&quot;";
-            } else if (c == '/') {
-                temp += "&#x2F;";
-            } else {
-                temp += c;
-            }
-        }
-        return temp;
+        return escapeHtml4(s);
     }
 
     static public boolean checkIfContainsNewLine(String s) {

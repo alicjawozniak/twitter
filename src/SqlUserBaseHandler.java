@@ -1,4 +1,7 @@
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 /**
  * Created by alicja on 31.05.16.
@@ -8,16 +11,16 @@ public class SqlUserBaseHandler {
 
     public User findByName(String name) {
         Connection c = null;
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         User user = null;
         try {
             c = getConnection();
             c.setAutoCommit(false);
             System.out.println("Opened database successfully");
 
-            stmt = c.createStatement();
-            name = new StringBuilder().append('\'').append(name).append('\'').toString();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM USER WHERE NAME IS " + name + ";");
+            stmt = c.prepareStatement("SELECT * FROM USER WHERE NAME IS ? ;");
+            stmt.setString(1, name);
+            ResultSet rs = stmt.executeQuery();
             int id = rs.getInt("id");
             name = rs.getString("name");
             byte[] hashedPassword = rs.getBytes("hashedpassword");
@@ -30,7 +33,6 @@ public class SqlUserBaseHandler {
 
             stmt.close();
             c.commit();
-//            c.close();
 
         } catch (Exception e) {
             e.printStackTrace();
